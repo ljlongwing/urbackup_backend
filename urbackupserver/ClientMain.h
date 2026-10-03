@@ -409,6 +409,7 @@ private:
 	bool do_full_image_now;
 	bool do_incr_image_now;
 	bool do_update_access_key;
+	bool do_send_settings;
 	bool cdp_needs_sync;
 
 	static int running_backups;

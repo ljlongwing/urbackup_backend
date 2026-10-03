@@ -404,6 +404,10 @@ std::string ServerChannelThread::processMsg(const std::string &msg)
 	{
 		client_main->sendToPipe("UPDATE SETTINGS");
 	}
+	else if(msg=="SEND SETTINGS")
+	{
+		client_main->sendToPipe("SEND SETTINGS");
+	}
 	else if(msg=="START IMAGE FULL")
 	{
 		client_main->sendToPipe("START IMAGE FULL");
@@ -635,6 +639,8 @@ int ServerChannelThread::constructCapabilities(void)
 		capa |= DONT_ALLOW_COMPONENT_RESTORE;
 	if (!cs->allow_component_config)
 		capa |= DONT_ALLOW_COMPONENT_CONFIG;
+
+	capa |= SERVER_SEND_SETTINGS;
 
 	return capa;
 }
