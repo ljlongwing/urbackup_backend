@@ -174,6 +174,10 @@ public:
 	static int startBackup(const std::string& virtual_client, bool full);
 	static int startImage(const std::string& virtual_client, bool full);
 	static bool updateSettings(const std::string &sdata, bool& no_perm);
+
+	//Server list as "count=N" and "<n>.<field>=<value>" lines
+	static std::string getServerList();
+	static std::string setServerList(const std::string &data);
 	static std::vector<SLogEntry> getLogEntries(void);
 	static std::vector<SLogLine> getLogdata(int logid, int loglevel);
 	static bool setPause(bool b_pause);

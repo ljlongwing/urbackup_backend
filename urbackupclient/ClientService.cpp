@@ -33,6 +33,7 @@
 #include "../cryptoplugin/ICryptoFactory.h"
 #include "../urbackupcommon/sha2/sha2.h"
 #include "ServerIdentityMgr.h"
+#include "ServerList.h"
 #include "../urbackupcommon/settings.h"
 #include "ImageThread.h"
 #include "InternetClient.h"
@@ -297,6 +298,7 @@ void ClientConnector::Init(THREAD_ID pTID, IPipe *pPipe, const std::string& pEnd
 	last_channel_ping=0;
 	file_version=1;
 	internet_conn=false;
+	internet_server_id=-1;
 	tcpstack.setAddChecksum(false);
 	last_update_time=lasttime;
 	endpoint_name = pEndpointName;
@@ -1037,6 +1039,24 @@ void ClientConnector::ReceivePacketsInt(IRunOtherCallback* p_run_other)
 		if(ident_ok || is_channel)
 		{
 			server_ident = ServerIdentityMgr::getServerIdentity(identity);
+
+			if(!internet_conn
+				&& !server_ident.empty())
+			{
+				SServerEntry entry;
+				if(ServerList::getEntryByIdent(server_ident, entry)
+					&& !entry.local)
+				{
+					//LAN connections of this server are disabled in the server list
+					Server->Log("Closing LAN connection of server " + server_ident + " (LAN disabled for it)", LL_DEBUG);
+					do_quit=true;
+					continue;
+				}
+				else if(ident_ok)
+				{
+					ServerList::setEndpoint(server_ident, endpoint_name);
+				}
+			}
 		}
 
 		if(ident_ok)
@@ -1045,7 +1065,7 @@ void ClientConnector::ReceivePacketsInt(IRunOtherCallback* p_run_other)
 
 			if(internet_conn)
 			{
-				InternetClient::setInternetServerIdentity(server_ident);
+				InternetClient::setInternetServerIdentity(internet_server_id, server_ident);
 			}
 		}
 
@@ -1290,8 +1310,17 @@ void ClientConnector::ReceivePacketsInt(IRunOtherCallback* p_run_other)
 				{
 					CMD_RESET_KEEP(params); continue;
 				}
+				else if (next(cmd, 0, "SET SERVER LIST "))
+				{
+					CMD_SET_SERVER_LIST(cmd); continue;
+				}
 			}
-			
+
+			if (cmd == "GET SERVER LIST")
+			{
+				CMD_GET_SERVER_LIST(cmd); continue;
+			}
+
 			if( cmd=="GET BACKUP DIRS" )
 			{
 				CMD_GET_BACKUPDIRS(cmd); continue;
@@ -1889,12 +1918,24 @@ void ClientConnector::updateSettings(const std::string &pData)
 				os_rename_file(srv_settings_fn + ".new", srv_settings_fn);
 			}
 		}
+
+		//Internet settings of servers other than the default internet server live in the server list
+		SServerEntry entry;
+		if (ServerList::getEntryByIdent(server_ident, entry)
+			&& entry.id != 0)
+		{
+			if (ServerList::updateFromServerSettings(server_ident, new_settings.get()))
+			{
+				InternetClient::updateSettings();
+			}
+		}
 	}
 
 	if (!isPrimaryServer(settings_fn))
 	{
 		Server->Log("Settings of server " + server_ident + " (not the primary server) are only used for its own backups", LL_DEBUG);
-		if (internet_conn)
+		if (internet_conn
+			&& internet_server_id == 0)
 		{
 			updateInternetSettings(settings_fn, new_settings.get());
 		}
@@ -1932,7 +1973,7 @@ void ClientConnector::updateSettings(const std::string &pData)
 		}
 	}
 
-	std::string internet_server_ident = InternetClient::getInternetServerIdentity();
+	std::string internet_server_ident = ServerList::getDefaultInternetIdent();
 	std::string new_internet_server;
 	if (!server_ident.empty()
 		&& !internet_conn
@@ -3599,9 +3640,10 @@ void ClientConnector::ImageErr(const std::string &msg)
 	delete [] buffer;
 }
 
-void ClientConnector::setIsInternetConnection(void)
+void ClientConnector::setIsInternetConnection(int server_id)
 {
 	internet_conn=true;
+	internet_server_id=server_id;
 	tcpstack.setAddChecksum(true);
 }
 

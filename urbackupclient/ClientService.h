@@ -213,7 +213,8 @@ public:
 	bool isQuitting(void);
 	bool isHashdataOkay(void);
 
-	void setIsInternetConnection(void);
+	//Connection to the internet server of server list entry server_id
+	void setIsInternetConnection(int server_id);
 
 	static bool isBackupRunning();
 
@@ -342,6 +343,8 @@ private:
 	void CMD_CAPA(const std::string &cmd);
 	void CMD_NEW_SERVER(str_map &params);
 	void CMD_RESET_KEEP(str_map &params);
+	void CMD_GET_SERVER_LIST(const std::string &cmd);
+	void CMD_SET_SERVER_LIST(const std::string &cmd);
 	void CMD_ENABLE_END_TO_END_FILE_BACKUP_VERIFICATION(const std::string &cmd);
 	void CMD_GET_VSSLOG(const std::string &cmd);
 	void CMD_GET_ACCESS_PARAMS(str_map &params);
@@ -468,6 +471,7 @@ private:
 	bool want_receive;
 
 	bool internet_conn;
+	int internet_server_id;
 
 	std::string endpoint_name;
 

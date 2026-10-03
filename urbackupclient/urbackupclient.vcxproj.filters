@@ -51,6 +51,9 @@
     <ClCompile Include="ServerIdentityMgr.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="ServerList.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
     <ClCompile Include="win_sysvol.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -222,6 +225,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="ServerIdentityMgr.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerList.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="win_sysvol.h">
