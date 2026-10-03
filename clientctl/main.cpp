@@ -654,7 +654,13 @@ int action_browse(std::vector<std::string> args)
 		"Virtual client name",
 		false, "", "client name", cmd);
 
+	TCLAP::ValueArg<std::string> server_arg("", "server",
+		"Only use the backups of this server (name, id or identity as shown by list-servers)",
+		false, "", "server", cmd);
+
 	cmd.parse(args);
+
+	Connector::server_filter = server_arg.getValue();
 
 	if (!pw_client_cmd.set())
 	{
@@ -808,7 +814,13 @@ int action_start_restore(std::vector<std::string> args)
 		"Virtual client name",
 		false, "", "client name", cmd);
 
+	TCLAP::ValueArg<std::string> server_arg("", "server",
+		"Only use the backups of this server (name, id or identity as shown by list-servers)",
+		false, "", "server", cmd);
+
 	cmd.parse(args);
+
+	Connector::server_filter = server_arg.getValue();
 
 	if (map_from_arg.getValue().size() != map_to_arg.getValue().size())
 	{
