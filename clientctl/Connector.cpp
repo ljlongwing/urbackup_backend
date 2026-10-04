@@ -374,7 +374,10 @@ int Connector::startBackup(const std::string& virtual_client, bool full)
 	else
 		s="START BACKUP INCR";
 
-	std::string d=getResponse(s, virtual_client.empty() ? "" : "virtual_client="+EscapeParamString(virtual_client),false);
+	std::string params = virtual_client.empty() ? "" : "virtual_client="+EscapeParamString(virtual_client);
+	if (!server_filter.empty())
+		params += (params.empty() ? "" : "&") + std::string("server=") + EscapeParamString(server_filter);
+	std::string d=getResponse(s, params,false);
 
 	if(d=="RUNNING")
 		return 2;
@@ -394,7 +397,10 @@ int Connector::startImage(const std::string& virtual_client, bool full)
 	else
 		s="START IMAGE INCR";
 
-	std::string d=getResponse(s, virtual_client.empty() ? "" : "virtual_client=" + EscapeParamString(virtual_client),false);
+	std::string params = virtual_client.empty() ? "" : "virtual_client=" + EscapeParamString(virtual_client);
+	if (!server_filter.empty())
+		params += (params.empty() ? "" : "&") + std::string("server=") + EscapeParamString(server_filter);
+	std::string d=getResponse(s, params,false);
 
 	if(d=="RUNNING")
 		return 2;

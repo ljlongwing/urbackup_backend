@@ -1319,7 +1319,7 @@ void ClientConnector::ReceivePacketsInt(IRunOtherCallback* p_run_other)
 
 			if (cmd == "GET SERVER LIST")
 			{
-				CMD_GET_SERVER_LIST(cmd); continue;
+				CMD_GET_SERVER_LIST(cmd, pw_change_ok); continue;
 			}
 
 			if( cmd=="GET BACKUP DIRS" )
@@ -3703,7 +3703,7 @@ int64 ClientConnector::getLastTokenTime(const std::string & tok)
 	}
 }
 
-void ClientConnector::tochannelSendStartbackup(RunningAction backup_type, const std::string& virtual_client)
+void ClientConnector::tochannelSendStartbackup(RunningAction backup_type, const std::string& virtual_client, const std::string& server)
 {
 	std::string ts;
 	if(backup_type==RUNNING_INCR_FILE)
@@ -3728,10 +3728,12 @@ void ClientConnector::tochannelSendStartbackup(RunningAction backup_type, const 
 	{
 		lock_process.relock(NULL);
 
-		size_t selidx = 0;
+		//With several servers, server says which one to ask for the backup
+		size_t selidx = server.empty() ? 0 : channel_pipes.size();
 		for (size_t i = 0; i < channel_pipes.size(); ++i)
 		{
-			if (channel_pipes[i].virtual_client == virtual_client)
+			if (channel_pipes[i].virtual_client == virtual_client
+				&& channelMatchesServer(channel_pipes[i], server))
 			{
 				selidx = i;
 			}
