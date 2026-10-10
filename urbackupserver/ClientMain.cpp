@@ -863,8 +863,8 @@ void ClientMain::operator ()(void)
 				for(size_t i=0;i<vols.size();++i)
 				{
 					std::string letter=normalizeVolumeUpper(vols[i]);
-					if( ( (isUpdateFullImage(letter) && !isRunningImageBackup(letter) && isBackupsRunningOkay(false)) || do_full_image_now)
-						&& !isImageGroupQueued(letter, true) )
+					if( ( (isUpdateFullImage(letter) && isBackupsRunningOkay(false)) || do_full_image_now)
+						&& !isRunningImageBackup(letter) && !isImageGroupQueued(letter, true) )
 					{
 						SRunningBackup backup;
 						backup.backup = new ImageBackup(this, clientid, clientname, clientsubname,
@@ -892,8 +892,8 @@ void ClientMain::operator ()(void)
 				for(size_t i=0;i<vols.size();++i)
 				{
 					std::string letter= normalizeVolumeUpper(vols[i]);
-					if( ((isUpdateIncrImage(letter) && !isRunningImageBackup(letter) && isBackupsRunningOkay(false) ) || do_incr_image_now)
-						&& !isImageGroupQueued(letter, false) )
+					if( ((isUpdateIncrImage(letter) && isBackupsRunningOkay(false) ) || do_incr_image_now)
+						&& !isRunningImageBackup(letter) && !isImageGroupQueued(letter, false) )
 					{
 						SRunningBackup backup;
 						backup.backup = new ImageBackup(this, clientid, clientname, clientsubname, do_incr_image_now ?LogAction_AlwaysLog:LogAction_LogIfNotDisabled,
