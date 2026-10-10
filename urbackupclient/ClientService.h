@@ -88,16 +88,18 @@ struct SRunningProcess
 struct SFinishedProcess
 {
 	SFinishedProcess()
-		:id(0), success(false)
+		:id(0), success(false), action(RUNNING_NONE)
 	{
 	}
 
-	SFinishedProcess(int64 id, bool success)
-		: id(id), success(success)
+	SFinishedProcess(int64 id, bool success, RunningAction action, const std::string& details)
+		: id(id), success(success), action(action), details(details)
 	{}
 
 	int64 id;
 	bool success;
+	RunningAction action;
+	std::string details;
 };
 
 enum RestoreOkStatus

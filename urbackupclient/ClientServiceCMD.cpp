@@ -1136,6 +1136,11 @@ void ClientConnector::CMD_STATUS_DETAIL(const std::string &cmd)
 		JSON::Object obj;
 		obj.set("process_id", finished_processes[i].id);
 		obj.set("success", finished_processes[i].success);
+		obj.set("action", actionToStr(finished_processes[i].action));
+		if (!finished_processes[i].details.empty())
+		{
+			obj.set("details", finished_processes[i].details);
+		}
 		j_finished_processes.add(obj);
 	}
 
@@ -1792,6 +1797,7 @@ void ClientConnector::CMD_INCR_IMAGE(const std::string &cmd, bool ident_ok)
 			hashdataok=false;
 			hashdataleft=watoi(f_hashsize->second);
 			image_inf.image_letter=(params["letter"]);
+			image_inf.orig_image_letter = image_inf.image_letter;
 			image_inf.shadowdrive=(params["shadowdrive"]);
 			image_inf.server_status_id = watoi(params["status_id"]);
 			if(params.find("start")!=params.end())
