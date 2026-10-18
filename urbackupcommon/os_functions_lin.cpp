@@ -85,7 +85,7 @@ std::vector<SFile> getFilesWin(const std::string &path, bool *has_error, bool ex
 #ifdef __APPLE__
 	static bool _sipCheck(const std::string &fn) {
 		bool res=false;
-		static const std::vector<std::string> blocked = {
+		static const char* blocked[] = {
 			"/Library/Caches/com.apple.aned",
 			"/Library/Caches/com.apple.amsengagementd.classicdatavault",
 			"/Library/Caches/com.apple.aneuserd",
@@ -132,7 +132,7 @@ std::vector<SFile> getFilesWin(const std::string &path, bool *has_error, bool ex
 				try_path="/"+remainder.substr(sl+1);
 			}
 		}
-		for(size_t i=0;i<blocked.size();++i) 
+		for(size_t i=0;i<sizeof(blocked)/sizeof(blocked[0]);++i) 
 		{
 			if(try_path==blocked[i]) 
 			{ 
